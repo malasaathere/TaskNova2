@@ -8,6 +8,7 @@ const swaggerUi = require('swagger-ui-express');
 const swaggerSpec = require('./config/swagger');
 const { connectDB } = require('./config/database');
 const { initWebSocket } = require('./utils/websocket');
+const isTest = process.env.NODE_ENV === 'test'; 
 
 // Import routes
 const authRoutes = require('./routes/authRoutes');
@@ -26,7 +27,7 @@ app.use(cors({
 
 // Rate limiting
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
+  windowMs: 15 * 60 * 1000,
   max: 100,
   message: { errorCode: 'RATE_LIMIT', message: 'Too many requests, please try again later' },
 });
@@ -75,14 +76,26 @@ app.use((err, req, res, next) => {
 const PORT = process.env.PORT || 5000;
 const server = http.createServer(app);
 
-// Attach WebSocket to the same HTTP server
-initWebSocket(server);
+ if (!isTest) {
+  initWebSocket(server);
+}
 
-connectDB().then(() => {
-  server.listen(PORT, () => {
-    console.log(`\n🚀 Server running on http://localhost:${PORT}`);
-    console.log(`📖 API Docs: http://localhost:${PORT}/api/docs\n`);
-  });
-});
+if (require.main === module) {
+  startServer();
+}
+
+async function startServer() {
+  try {
+    await connectDB();
+
+    server.listen(PORT, () => {
+      console.log(`\n🚀 Server running on http://localhost:${PORT}`);
+      console.log(`📖 API Docs: http://localhost:${PORT}/api/docs\n`);
+    });
+  } catch (err) {
+    console.error('Server failed to start:', err.message);
+    process.exit(1);
+  }
+}
 
 module.exports = app;

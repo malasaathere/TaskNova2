@@ -9,11 +9,9 @@ const swaggerUi = require('swagger-ui-express');
 const swaggerSpec = require('./config/swagger');
 const { connectDB } = require('./config/database');
 const { initWebSocket } = require('./utils/websocket');
- HEAD
-const isTest = process.env.NODE_ENV === 'test'; 
 
+const isTest = process.env.NODE_ENV === 'test'; 
 const { startDeadlineScheduler } = require('./utils/scheduler');
- feature/server-wiring
 
 // Import routes
 const authRoutes = require('./routes/authRoutes');
@@ -102,7 +100,6 @@ const server = http.createServer(app);
   initWebSocket(server);
 }
 
- HEAD
 if (require.main === module) {
   startServer();
 }
@@ -114,22 +111,14 @@ async function startServer() {
     server.listen(PORT, () => {
       console.log(`\n🚀 Server running on http://localhost:${PORT}`);
       console.log(`📖 API Docs: http://localhost:${PORT}/api/docs\n`);
+
+      // Start the deadline notification scheduler (NEW)
+      startDeadlineScheduler();
     });
   } catch (err) {
     console.error('Server failed to start:', err.message);
     process.exit(1);
   }
 }
-
-connectDB().then(() => {
-  server.listen(PORT, () => {
-    console.log(`\n🚀 Server running on http://localhost:${PORT}`);
-    console.log(`📖 API Docs: http://localhost:${PORT}/api/docs\n`);
-
-    // Start the deadline notification scheduler (NEW)
-    startDeadlineScheduler();
-  });
-});
- feature/server-wiring
 
 module.exports = app;

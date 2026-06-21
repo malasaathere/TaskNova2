@@ -51,6 +51,7 @@ export function TaskNovaLogo({ size = 32, showText = true }) {
   );
 }
 
+
 export default function Sidebar({ collapsed, setCollapsed }) {
   const { user, logout } = useAuth();
   const navigate = useNavigate();

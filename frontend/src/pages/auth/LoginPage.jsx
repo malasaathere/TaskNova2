@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { TaskNovaLogo } from '../../components/layout/Sidebar';
+import  TaskNovaLogo  from '../../components/layout/TaskNovaLogo';
 import Card from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
 import showToast from '../../components/ui/Toast';

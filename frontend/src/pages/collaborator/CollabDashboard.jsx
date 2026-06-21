@@ -10,7 +10,7 @@ import {
   CheckSquare, 
   MessageSquare, 
   Paperclip, 
-  FolderEye,
+  FolderOpen,
   Calendar,
   Clock,
   TrendingUp,
@@ -59,7 +59,7 @@ export default function CollabDashboard() {
             { label: 'Update Status', icon: CheckSquare, desc: 'Drag tasks or select status inline' },
             { label: 'Add Comment', icon: MessageSquare, desc: 'Write replies to task notes' },
             { label: 'Upload Attachment', icon: Paperclip, desc: 'Add files or mock screenshots' },
-            { label: 'View Project', icon: FolderEye, desc: 'See roadmaps & active specialists' }
+            { label: 'View Project', icon: FolderOpen, desc: 'See roadmaps & active specialists' }
           ].map((act, index) => {
             const Icon = act.icon;
             return (

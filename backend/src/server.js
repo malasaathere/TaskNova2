@@ -161,7 +161,7 @@ const server = http.createServer(app);
   initWebSocket(server);
 }
 
-if (require.main === module) {
+if (require.main === module && !process.env.VERCEL) {
   startServer();
 }
 

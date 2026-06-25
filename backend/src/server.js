@@ -55,6 +55,22 @@ app.use('/api/auth/login', authLimiter);
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
+// Lazy database connection middleware for Vercel/serverless environments
+let isDbConnected = false;
+app.use(async (req, res, next) => {
+  if (req.path === '/health') return next(); // Skip DB check for simple health check
+  if (!isDbConnected && !isTest) {
+    try {
+      await connectDB();
+      isDbConnected = true;
+    } catch (err) {
+      return next(err);
+    }
+  }
+  next();
+});
+
+
 // ── Static file serving for uploaded attachments ────────────────────
 // NOTE: served behind auth via download endpoint, this is just a safety fallback disabled by default
 // app.use('/uploads', express.static(path.join(__dirname, '../uploads')));

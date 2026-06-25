@@ -7,10 +7,11 @@ const isProduction = process.env.NODE_ENV === 'production';
 let sequelize;
 
 if (process.env.DATABASE_URL) {
+  const isPostgres = process.env.DATABASE_URL.startsWith('postgres://') || process.env.DATABASE_URL.startsWith('postgresql://');
   sequelize = new Sequelize(process.env.DATABASE_URL, {
-    dialect: 'mysql',
+    dialect: isPostgres ? 'postgres' : 'mysql',
     logging: process.env.NODE_ENV === 'development' ? console.log : false,
-    dialectOptions: isProduction ? {
+    dialectOptions: (isProduction || isPostgres) ? {
       ssl: {
         rejectUnauthorized: false
       }
@@ -23,14 +24,15 @@ if (process.env.DATABASE_URL) {
     logging: process.env.NODE_ENV === 'development' ? console.log : false,
   });
 } else {
+  const dialect = process.env.DB_DIALECT || 'mysql';
   sequelize = new Sequelize(
     process.env.DB_NAME,
     process.env.DB_USER,
     process.env.DB_PASSWORD,
     {
       host: process.env.DB_HOST,
-      port: process.env.DB_PORT || 3306,
-      dialect: 'mysql',
+      port: process.env.DB_PORT || (dialect === 'postgres' ? 5432 : 3306),
+      dialect: dialect,
       logging: process.env.NODE_ENV === 'development' ? console.log : false,
       pool: {
         max: 10,
@@ -38,6 +40,11 @@ if (process.env.DATABASE_URL) {
         acquire: 30000,
         idle: 10000,
       },
+      dialectOptions: (isProduction && dialect === 'postgres') ? {
+        ssl: {
+          rejectUnauthorized: false
+        }
+      } : {}
     }
   );
 }

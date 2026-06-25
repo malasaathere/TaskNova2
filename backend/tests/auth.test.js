@@ -10,10 +10,14 @@ beforeAll(async () => {
     await sequelize.query('SET FOREIGN_KEY_CHECKS = 0');
   } else if (sequelize.getDialect() === 'sqlite') {
     await sequelize.query('PRAGMA foreign_keys = OFF');
+  } else if (sequelize.getDialect() === 'postgres') {
+    await sequelize.query('TRUNCATE TABLE users, otps CASCADE');
   }
   
-  await User.destroy({ where: {}, truncate: true });
-  await Otp.destroy({ where: {}, truncate: true });
+  if (sequelize.getDialect() !== 'postgres') {
+    await User.destroy({ where: {}, truncate: true });
+    await Otp.destroy({ where: {}, truncate: true });
+  }
   
   if (sequelize.getDialect() === 'mysql') {
     await sequelize.query('SET FOREIGN_KEY_CHECKS = 1');

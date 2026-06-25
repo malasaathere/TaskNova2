@@ -1,6 +1,10 @@
 const { Sequelize } = require('sequelize');
 require('dotenv').config();
 
+// Force Vercel bundler to include postgres drivers in the serverless build
+require('pg');
+require('pg-hstore');
+
 const useSQLite = process.env.DB_DIALECT === 'sqlite';
 const isProduction = process.env.NODE_ENV === 'production';
 

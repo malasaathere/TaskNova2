@@ -167,7 +167,12 @@ if (require.main === module && !process.env.VERCEL) {
 
 async function startServer() {
   try {
-    await connectDB();
+    try {
+      await connectDB();
+      isDbConnected = true;
+    } catch (dbErr) {
+      console.error('⚠️ Database connection failed on startup, will retry on request:', dbErr.message);
+    }
 
     server.listen(PORT, () => {
       console.log(`\n🚀 Server running on http://localhost:${PORT}`);

@@ -121,6 +121,11 @@ app.use('/api', attachmentRoutes); // NEW - provides /api/tasks/:id/attachments 
 app.use('/api/admin', adminRoutes); // NEW
 app.use('/api/projects', projectRoutes);
 
+// Root route for Azure Health Probes
+app.get('/', (req, res) => {
+  res.status(200).send('TMS API is running');
+});
+
 // Health check
 app.get('/health', async (req, res) => {
   try {

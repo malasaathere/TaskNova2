@@ -90,7 +90,37 @@ app.use('/api/admin', adminRoutes); // NEW
 app.use('/api/projects', projectRoutes);
 
 // Health check
-app.get('/health', (req, res) => res.json({ status: 'ok', time: new Date() }));
+// Health check
+app.get('/health', async (req, res) => {
+  try {
+    const { Otp, User } = require('./models');
+    const otpsCount = await Otp.count();
+    const usersCount = await User.count();
+    
+    let dbUrlMasked = 'not set';
+    if (process.env.DATABASE_URL) {
+      dbUrlMasked = process.env.DATABASE_URL.replace(/:([^:@]+)@/, ':****@');
+    }
+
+    res.json({
+      status: 'ok',
+      time: new Date(),
+      databaseUrl: dbUrlMasked,
+      dialect: process.env.DB_DIALECT,
+      counts: {
+        otps: otpsCount,
+        users: usersCount
+      }
+    });
+  } catch (err) {
+    res.json({
+      status: 'error',
+      time: new Date(),
+      error: err.message,
+      stack: err.stack
+    });
+  }
+});
 
 // Seeding endpoint (runs on Vercel environment directly to bypass local firewall blocks)
 app.get('/health/seed', async (req, res, next) => {

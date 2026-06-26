@@ -57,8 +57,8 @@ const createUser = async (req, res) => {
       return res.status(400).json({ errorCode: 'EMAIL_EXISTS', message: 'Email already in use' });
     }
 
-    // Use provided password or generate a random fallback
-    const finalPassword = password || crypto.randomBytes(8).toString('hex');
+    // Use provided password or generate a random fallback (exactly 6 characters)
+    const finalPassword = password || crypto.randomBytes(3).toString('hex');
 
     const user = await User.create({
       name, email, role,

@@ -1,10 +1,10 @@
 node_modules
 npm-debug.log
-.env
-.env.test
-coverage
 .git
-*.log
-database.sqlite
-uploads/*
-!uploads/.gitkeep
+.gitignore
+.env
+.env.local
+Dockerfile
+.dockerignore
+README.md
+.vscode

@@ -75,9 +75,6 @@ const connectDB = async () => {
     console.log('✅ Database synced');
   } catch (error) {
     console.error('❌ Database connection failed:', error.message);
-    if (process.env.NODE_ENV !== 'test' && !process.env.VERCEL && !process.env.WEBSITE_HOSTNAME) {
-      process.exit(1);
-    }
     throw error;
   }
 };

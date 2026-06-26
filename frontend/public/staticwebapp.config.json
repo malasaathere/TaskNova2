@@ -1,6 +1,7 @@
 {
   "navigationFallback": {
     "rewrite": "/index.html",
-    "exclude": ["/static/*", "/images/*", "/favicon.ico"]
+    "exclude": ["/static/**", "/images/**", "/favicon.ico"]
   }
 }
+

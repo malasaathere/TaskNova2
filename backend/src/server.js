@@ -110,7 +110,6 @@ app.use('/api/admin', adminRoutes); // NEW
 app.use('/api/projects', projectRoutes);
 
 // Health check
-// Health check
 app.get('/health', async (req, res) => {
   try {
     const { Otp, User } = require('./models');

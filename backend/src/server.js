@@ -24,6 +24,9 @@ const projectRoutes = require('./routes/projectRoutes');
 
 const app = express();
 
+// Trust proxy headers (needed for express-rate-limit when running behind reverse proxies like Azure App Service)
+app.set('trust proxy', 1);
+
 // ── Security middleware ──────────────────────────────────────────────
 app.use(helmet());
 app.use(cors({

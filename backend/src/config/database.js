@@ -11,17 +11,27 @@ const isProduction = process.env.NODE_ENV === 'production';
 let sequelize;
 
 if (process.env.DATABASE_URL) {
-  const isPostgres = process.env.DATABASE_URL.startsWith('postgres://') || process.env.DATABASE_URL.startsWith('postgresql://');
-  sequelize = new Sequelize(process.env.DATABASE_URL, {
-    dialect: isPostgres ? 'postgres' : 'mysql',
-    dialectModule: isPostgres ? pg : undefined,
-    logging: process.env.NODE_ENV === 'development' ? console.log : false,
-    dialectOptions: (isProduction || isPostgres) ? {
-      ssl: {
-        rejectUnauthorized: false
-      }
-    } : {}
-  });
+  try {
+    const isPostgres = process.env.DATABASE_URL.startsWith('postgres://') || process.env.DATABASE_URL.startsWith('postgresql://');
+    sequelize = new Sequelize(process.env.DATABASE_URL, {
+      dialect: isPostgres ? 'postgres' : 'mysql',
+      dialectModule: isPostgres ? pg : undefined,
+      logging: process.env.NODE_ENV === 'development' ? console.log : false,
+      dialectOptions: (isProduction || isPostgres) ? {
+        ssl: {
+          rejectUnauthorized: false
+        }
+      } : {}
+    });
+  } catch (err) {
+    console.error('❌ Failed to initialize Sequelize with provided DATABASE_URL. Is the connection string valid? Error:', err.message);
+    // Create a dummy mock instance so it doesn't crash the server on require('./models')
+    sequelize = {
+      authenticate: async () => { throw new Error('Invalid DATABASE_URL format'); },
+      sync: async () => {},
+      define: () => ({ belongsTo: () => {}, hasMany: () => {}, init: () => {}, prototype: {} })
+    };
+  }
 } else if (useSQLite) {
   sequelize = new Sequelize({
     dialect: 'sqlite',

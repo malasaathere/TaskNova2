@@ -29,16 +29,28 @@ app.set('trust proxy', 1);
 
 // ── Security middleware ──────────────────────────────────────────────
 app.use(helmet());
+
+// Always-allowed origins (production deployments)
+const ALWAYS_ALLOWED = [
+  'http://localhost:3000',
+  'http://localhost:3001',
+  'https://green-forest-04b5c8100.7.azurestaticapps.net',
+  'https://task-management-system-sable-xi.vercel.app',
+];
+
 app.use(cors({
   origin: (origin, callback) => {
-    const allowed = (process.env.FRONTEND_URL || 'http://localhost:3000')
-      .split(',')
-      .map(url => url.trim().replace(/\/$/, ''));
+    // Merge hardcoded allowed origins with any extra ones from FRONTEND_URL env var
+    const envUrls = process.env.FRONTEND_URL
+      ? process.env.FRONTEND_URL.split(',').map(url => url.trim().replace(/\/$/, ''))
+      : [];
+    const allowed = [...new Set([...ALWAYS_ALLOWED, ...envUrls])];
     if (!origin || allowed.includes(origin.trim().replace(/\/$/, ''))) callback(null, true);
     else callback(new Error('Not allowed by CORS'));
   },
   credentials: true,
 }));
+
 
 // Helper to extract client IP and strip any port numbers (IPv4/IPv6) added by reverse proxies like Azure
 const getClientIp = (req) => {

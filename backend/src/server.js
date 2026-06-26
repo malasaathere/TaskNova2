@@ -244,9 +244,9 @@ async function startServer() {
       console.error('⚠️ Database connection failed on startup, will retry on request:', dbErr.message);
     }
 
-    server.listen(PORT, () => {
-      console.log(`\n🚀 Server running on http://localhost:${PORT}`);
-      console.log(`📖 API Docs: http://localhost:${PORT}/api/docs\n`);
+    server.listen(PORT, '0.0.0.0', () => {
+      console.log(`\n🚀 Server running on http://0.0.0.0:${PORT}`);
+      console.log(`📖 API Docs: http://0.0.0.0:${PORT}/api/docs\n`);
 
       // Start the deadline notification scheduler (NEW)
       startDeadlineScheduler();

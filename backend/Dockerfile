@@ -14,4 +14,7 @@ EXPOSE 8080
 
 ENV PORT=8080
 
+RUN ls -la /app
+RUN ls -la /app/src || true
+
 CMD ["node", "src/server.js"]

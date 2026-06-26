@@ -9,6 +9,9 @@ COPY . .
 
 RUN mkdir -p uploads
 
-EXPOSE 5000
+# Azure App Service routes to port 8080 by default for Docker containers
+EXPOSE 8080
+
+ENV PORT=8080
 
 CMD ["node", "src/server.js"]

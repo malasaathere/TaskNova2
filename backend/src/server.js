@@ -28,8 +28,10 @@ const app = express();
 app.use(helmet());
 app.use(cors({
   origin: (origin, callback) => {
-    const allowed = (process.env.FRONTEND_URL || 'http://localhost:3000').split(',');
-    if (!origin || allowed.includes(origin)) callback(null, true);
+    const allowed = (process.env.FRONTEND_URL || 'http://localhost:3000')
+      .split(',')
+      .map(url => url.trim().replace(/\/$/, ''));
+    if (!origin || allowed.includes(origin.trim().replace(/\/$/, ''))) callback(null, true);
     else callback(new Error('Not allowed by CORS'));
   },
   credentials: true,

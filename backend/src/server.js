@@ -40,11 +40,27 @@ app.use(cors({
   credentials: true,
 }));
 
+// Helper to extract client IP and strip any port numbers (IPv4/IPv6) added by reverse proxies like Azure
+const getClientIp = (req) => {
+  let ip = req.ip || req.headers['x-forwarded-for'] || req.socket.remoteAddress || '';
+  if (ip.includes(',')) {
+    ip = ip.split(',')[0].trim();
+  }
+  if (ip.includes('[') && ip.includes(']')) {
+    const match = ip.match(/\[(.*)\]/);
+    if (match) ip = match[1];
+  } else if ((ip.match(/:/g) || []).length === 1) {
+    ip = ip.split(':')[0];
+  }
+  return ip;
+};
+
 // Rate limiting
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 100,
   message: { errorCode: 'RATE_LIMIT', message: 'Too many requests, please try again later' },
+  keyGenerator: getClientIp,
 });
 app.use('/api/', limiter);
 
@@ -53,6 +69,7 @@ const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 10,
   message: { errorCode: 'RATE_LIMIT', message: 'Too many login attempts' },
+  keyGenerator: getClientIp,
 });
 app.use('/api/auth/login', authLimiter);
 

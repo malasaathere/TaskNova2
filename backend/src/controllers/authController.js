@@ -22,6 +22,7 @@ const generateTokens = (user) => {
 const login = async (req, res) => {
   try {
     const { email, password } = req.body;
+    console.log('[DEBUG LOGIN] Received email:', JSON.stringify(email));
 
     const user = await User.findOne({ where: { email } });
     if (!user || !user.isActive) {
@@ -95,6 +96,7 @@ const login = async (req, res) => {
 const verify2fa = async (req, res) => {
   try {
     const { email, code } = req.body;
+    console.log('[DEBUG VERIFY] Received email:', JSON.stringify(email), 'code:', JSON.stringify(code));
     if (!email || !code) {
       return res.status(400).json({ errorCode: 'VALIDATION_ERROR', message: 'Email and 2FA code are required' });
     }

@@ -40,7 +40,7 @@ After running `node seed.js`:
 
 | Role | Email | Password |
 |------|-------|----------|
-| Admin | admin@tms.com | Admin@1234 |
+| Admin | tasknova.test26@gmail.com | Admin@1234 |
 | Project Manager | manager@tms.com | Manager@1234 |
 | Collaborator | collaborator@tms.com | Collab@1234 |
 

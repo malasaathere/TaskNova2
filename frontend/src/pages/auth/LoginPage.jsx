@@ -211,7 +211,7 @@ export default function LoginPage() {
                 </span>
                 <input 
                   type="email" 
-                  placeholder="e.g. admin@tms.com" 
+                  placeholder="e.g. tasknova.test26@gmail.com" 
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
@@ -360,7 +360,7 @@ export default function LoginPage() {
           <div style={{ fontWeight: '600', color: 'var(--text-secondary)', marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '4px' }}>
             <ShieldAlert size={12} /> Predefined Roles for Testing:
           </div>
-          <div>• Admin: <strong>admin@tms.com</strong></div>
+          <div>• Admin: <strong>tasknova.test26@gmail.com</strong></div>
           <div>• Manager: <strong>manager@tms.com</strong></div>
           <div>• Collaborator: <strong>collab@tms.com</strong></div>
           <div style={{ marginTop: '4px' }}>* Blocked trigger email: <strong>blocked@tms.com</strong></div>

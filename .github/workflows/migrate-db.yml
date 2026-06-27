@@ -1,0 +1,25 @@
+name: Run Database Migration
+on:
+  workflow_dispatch:
+    inputs:
+      database_url:
+        description: 'PostgreSQL Connection URL (from Azure)'
+        required: true
+        type: string
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      - name: Install dependencies
+        working-directory: ./backend
+        run: npm ci
+      - name: Run migration script
+        working-directory: ./backend
+        env:
+          DATABASE_URL: ${{ inputs.database_url }}
+        run: node restore.js

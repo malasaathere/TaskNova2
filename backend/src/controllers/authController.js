@@ -55,11 +55,14 @@ const login = async (req, res) => {
       });
     }
 
-    // Hardcode OTP for easier presentation/testing since email is not configured on Azure
+    // Generate a random 6-digit code if EMAIL_HOST is set, otherwise fall back to 123456
     let otpCode = '123456';
+    if (process.env.EMAIL_HOST && process.env.NODE_ENV !== 'test') {
+      otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+    }
     const expiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5 min expiry
 
-    console.log(`[2FA] Email: ${email} | Code: ${otpCode}`);
+    console.log(`[2FA] Email: ${email} | Code: ${process.env.EMAIL_HOST ? 'HIDDEN (Sent to email)' : otpCode}`);
 
     // Hash the OTP code
     const hashedCode = await bcrypt.hash(otpCode, 12);

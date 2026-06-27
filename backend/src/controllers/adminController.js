@@ -1,6 +1,8 @@
 const { User, Notification } = require('../models');
 const { notifyUser } = require('../utils/websocket');
 
+const { sendSystemNotificationEmail } = require('../utils/email');
+
 // POST /api/admin/broadcast  — Admin sends an announcement to all (or some) users
 const sendBroadcast = async (req, res) => {
   try {
@@ -13,7 +15,7 @@ const sendBroadcast = async (req, res) => {
     const where = { isActive: true };
     if (role) where.role = role;
 
-    const users = await User.findAll({ where, attributes: ['id'] });
+    const users = await User.findAll({ where, attributes: ['id', 'email'] });
 
     const notifications = await Promise.all(
       users.map(u =>
@@ -25,9 +27,12 @@ const sendBroadcast = async (req, res) => {
       )
     );
 
-    // Push in real-time to connected users
+    // Push in real-time to connected users and send emails
     notifications.forEach((n, i) => {
       notifyUser(users[i].id, { type: 'admin_update', notification: n });
+      if (process.env.EMAIL_HOST && users[i].email) {
+        sendSystemNotificationEmail(users[i].email, 'Admin Announcement', message).catch(console.error);
+      }
     });
 
     res.status(201).json({ message: `Broadcast sent to ${users.length} user(s)` });

@@ -44,6 +44,15 @@ const checkApproachingDeadlines = async () => {
       });
 
       notifyUser(task.assignedTo, { type: 'deadline_approaching', notification });
+      
+      if (process.env.EMAIL_HOST) {
+        const { User } = require('../models');
+        const assignee = await User.findByPk(task.assignedTo);
+        if (assignee && assignee.email) {
+          const { sendSystemNotificationEmail } = require('./email');
+          sendSystemNotificationEmail(assignee.email, 'Upcoming Deadline', notification.message).catch(console.error);
+        }
+      }
     }
 
     console.log(`✅ Deadline check complete — ${tasks.length} task(s) checked`);

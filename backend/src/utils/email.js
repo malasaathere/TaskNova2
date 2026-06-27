@@ -46,5 +46,19 @@ const send2faEmail = async (to, code) => {
     `,
   });
 };
+const sendSystemNotificationEmail = async (to, title, message) => {
+  await transporter.sendMail({
+    from: process.env.EMAIL_FROM,
+    to,
+    subject: `New Notification: ${title}`,
+    html: `
+      <h2>${title}</h2>
+      <p>${message}</p>
+      <p style="margin-top: 30px; font-size: 12px; color: #666;">
+        You are receiving this email because of activity on your Task Management System account.
+      </p>
+    `,
+  });
+};
 
-module.exports = { sendWelcomeEmail, sendPasswordResetEmail, send2faEmail };
+module.exports = { sendWelcomeEmail, sendPasswordResetEmail, send2faEmail, sendSystemNotificationEmail };

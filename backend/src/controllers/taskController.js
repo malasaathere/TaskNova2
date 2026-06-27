@@ -1,5 +1,6 @@
 const { Task, User, Comment, Notification, Project, Attachment } = require('../models');
 const { notifyUser } = require('../utils/websocket');
+const { sendSystemNotificationEmail } = require('../utils/email');
 const { Op } = require('sequelize');
 
 const taskIncludes = [
@@ -86,6 +87,11 @@ const createTask = async (req, res) => {
         taskId: task.id,
       });
       notifyUser(assignedTo, { type: 'task_assigned', notification, task: fullTask });
+      
+      // Email notification
+      if (process.env.EMAIL_HOST && assignee && assignee.email) {
+        sendSystemNotificationEmail(assignee.email, 'New Task Assigned', notification.message).catch(console.error);
+      }
     }
 
     res.status(201).json({ message: 'Task created successfully', task: fullTask });
@@ -123,6 +129,7 @@ const updateTask = async (req, res) => {
       // Notify project manager of status change
       const project = await Project.findByPk(task.projectId);
       if (project && project.managerId) {
+        const manager = await User.findByPk(project.managerId);
         const notification = await Notification.create({
           userId: project.managerId,
           message: `Task "${task.title}" status changed to ${status} by ${req.user.name}`,
@@ -130,6 +137,10 @@ const updateTask = async (req, res) => {
           taskId: task.id,
         });
         notifyUser(project.managerId, { type: 'status_changed', notification, task: updatedTask });
+        
+        if (process.env.EMAIL_HOST && manager && manager.email) {
+          sendSystemNotificationEmail(manager.email, 'Task Status Changed', notification.message).catch(console.error);
+        }
       }
       
       return res.json({ message: 'Task updated successfully', task: updatedTask });
@@ -150,6 +161,7 @@ const updateTask = async (req, res) => {
 
     // Notify assignee of status change or assignment
     if (assignedTo !== undefined && assignedTo !== task.assignedTo) {
+      const assignee = await User.findByPk(assignedTo);
       const notification = await Notification.create({
         userId: assignedTo,
         message: `You have been assigned a new task: "${task.title}"`,
@@ -157,7 +169,12 @@ const updateTask = async (req, res) => {
         taskId: task.id,
       });
       notifyUser(assignedTo, { type: 'task_assigned', notification, task: updatedTask });
+      
+      if (process.env.EMAIL_HOST && assignee && assignee.email) {
+        sendSystemNotificationEmail(assignee.email, 'New Task Assigned', notification.message).catch(console.error);
+      }
     } else if (task.assignedTo && status !== undefined && status !== oldStatus) {
+      const assignee = await User.findByPk(task.assignedTo);
       const notification = await Notification.create({
         userId: task.assignedTo,
         message: `Task "${task.title}" status changed to ${status}`,
@@ -165,6 +182,10 @@ const updateTask = async (req, res) => {
         taskId: task.id,
       });
       notifyUser(task.assignedTo, { type: 'status_changed', notification, task: updatedTask });
+      
+      if (process.env.EMAIL_HOST && assignee && assignee.email) {
+        sendSystemNotificationEmail(assignee.email, 'Task Status Changed', notification.message).catch(console.error);
+      }
     }
 
     res.json({ message: 'Task updated successfully', task: updatedTask });
@@ -204,6 +225,7 @@ const addComment = async (req, res) => {
 
     // Notify task assignee
     if (task.assignedTo && task.assignedTo !== req.user.id) {
+      const assignee = await User.findByPk(task.assignedTo);
       const notification = await Notification.create({
         userId: task.assignedTo,
         message: `New comment on task "${task.title}"`,
@@ -211,6 +233,10 @@ const addComment = async (req, res) => {
         taskId: task.id,
       });
       notifyUser(task.assignedTo, { type: 'comment_added', notification });
+      
+      if (process.env.EMAIL_HOST && assignee && assignee.email) {
+        sendSystemNotificationEmail(assignee.email, 'New Comment Added', notification.message).catch(console.error);
+      }
     }
 
     res.status(201).json({ message: 'Comment added', comment: fullComment });

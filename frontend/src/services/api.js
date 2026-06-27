@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: process.env.REACT_APP_API_URL || 'https://tmsbackend-api-f6gwc7ejfphmg5f3.southeastasia-01.azurewebsites.net',
+  baseURL: process.env.REACT_APP_API_URL || 'https://tasknova2-api-fjg9dshge9c6e7bj.eastasia-01.azurewebsites.net',
 });
 
 // Attach JWT token to every request
@@ -21,7 +21,7 @@ api.interceptors.response.use(
       try {
         const refreshToken = localStorage.getItem('refreshToken');
         const { data } = await axios.post(
-          `${process.env.REACT_APP_API_URL || 'https://tmsbackend-api-f6gwc7ejfphmg5f3.southeastasia-01.azurewebsites.net'}/api/auth/refresh`,
+          `${process.env.REACT_APP_API_URL || 'https://tasknova2-api-fjg9dshge9c6e7bj.eastasia-01.azurewebsites.net'}/api/auth/refresh`,
           { refreshToken }
         );
         localStorage.setItem('accessToken', data.accessToken);

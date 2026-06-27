@@ -8,7 +8,7 @@ const useWebSocket = (onMessage) => {
     const token = localStorage.getItem('accessToken');
     if (!token) return;
 
-    const wsUrl = `${process.env.REACT_APP_WS_URL || 'wss://tmsbackend-api-f6gwc7ejfphmg5f3.southeastasia-01.azurewebsites.net'}?token=${token}`;
+    const wsUrl = `${process.env.REACT_APP_WS_URL || 'wss://tasknova2-api-fjg9dshge9c6e7bj.eastasia-01.azurewebsites.net'}?token=${token}`;
     ws.current = new WebSocket(wsUrl);
 
     ws.current.onopen = () => {
